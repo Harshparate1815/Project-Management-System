@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Online Exam</title>
+<link rel="stylesheet" href="Style.css">
+</head>
+<body>
+<!-- Timer and End Exam -->
+  <div class="timer-container">
+    <span id="timer">20:00</span>
+    <button type="button" onclick="endExam()">End Exam</button>
+  </div>
+
+  <!-- Quiz Form -->
+  <form action="ExamServlet" method="post" id="quizForm">
+  <input type="hidden" name="subject" value="Cpp7th">
+    <div class="question" id="q1">
+      <h3>Q1. Which of the following best describes a virtual function in C++?</h3>
+      <input type="radio" name="q1" value="A">A function defined in a base class that cannot be overridden<br>
+      <input type="radio" name="q1" value="B">A function defined outside the class using virtual keyword<br>
+      <input type="radio" name="q1" value="C">A function that can be overridden in a derived class and supports runtime polymorphism<br>
+      <input type="radio" name="q1" value="D">A function that can only be used in templates<br>
+    </div>
+
+    <div class="question" id="q2">
+      <h3>Q2. Which of the following is true about constructors in C++?</h3>
+      <input type="radio" name="q2" value="A">Constructors have return type void<br>
+      <input type="radio" name="q2" value="B">A class can have only one constructor<br>
+      <input type="radio" name="q2" value="C">Constructors can be overloaded <br>
+      <input type="radio" name="q2" value="D">Constructors must always be public<br>
+      
+    </div>
+
+    <div class="question" id="q3">
+      <h3>Q3. Which C++ feature allows defining multiple functions with the same name but different parameters?</h3>
+      <input type="radio" name="q3" value="A">Operator overloading<br>
+      <input type="radio" name="q3" value="B">Function overriding<br>
+      <input type="radio" name="q3" value="C">Function overloading<br>
+      <input type="radio" name="q3" value="D">Virtual functions<br>
+      
+    </div>
+
+    <div class="question" id="q4">
+      <h3>Q4. Which of the following is used to define an abstract class in C++?</h3>
+      <input type="radio" name="q4" value="A">A way to create static functions<br>
+      <input type="radio" name="q4" value="B">A feature to define generic classes and functions <br>
+      <input type="radio" name="q4" value="C">A mechanism to prevent function overloading<br>
+      <input type="radio" name="q4" value="D">A class that contains only pointers<br>
+      
+    </div>
+
+    <div class="question" id="q5">
+      <h3>Q5. What is the purpose of friend function in C++?</h3>
+      <input type="radio" name="q5" value="A">To access protected members of base class<br>
+      <input type="radio" name="q5" value="B">To inherit private data from another class<br>
+      <input type="radio" name="q5" value="C">To access private and protected members of a class <br>
+      <input type="radio" name="q5" value="D">To overload operators outside the class<br>
+      
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation-buttons">
+      <button type="button" onclick="prevQuestion()">Previous</button>
+      <button type="button" onclick="clearAnswer()">Clear</button>
+      <button type="button" id="nextBtn" onclick="nextQuestion()">Next</button>
+      <input type="submit" id="submitBtn" value="Submit Answers" style="display:none;">
+    </div>
+  </form>
+	<script>
+    const questions = document.querySelectorAll('.question');
+    let current = 0;
+
+    function showQuestion(index) {
+      questions.forEach((q, i) => {
+        q.style.display = i === index ? 'block' : 'none';
+      });
+
+      document.querySelector('button[onclick="prevQuestion()"]').style.display = index === 0 ? 'none' : 'inline-block';
+      document.getElementById('nextBtn').style.display = index === questions.length - 1 ? 'none' : 'inline-block';
+      document.getElementById('submitBtn').style.display = index === questions.length - 1 ? 'inline-block' : 'none';
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        current++;
+        showQuestion(current);
+      }
+    }
+
+    function prevQuestion() {
+      if (current > 0) {
+        current--;
+        showQuestion(current);
+      }
+    }
+
+    function clearAnswer() {
+      const radios = questions[current].querySelectorAll('input[type="radio"]');
+      radios.forEach(r => r.checked = false);
+    }
+
+    function endExam() {
+      alert("Exam ended.");
+      document.getElementById("quizForm").submit();
+    }
+
+    // Timer logic
+    let totalSeconds = 20 * 60;
+    const timerElement = document.getElementById('timer');
+
+    function updateTimer() {
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      timerElement.textContent = `${minutes}:${seconds}`;
+      if (totalSeconds > 0) {
+        totalSeconds--;
+      } else {
+        endExam();
+      }
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+    showQuestion(current);
+  </script>
+</body>
+</html>

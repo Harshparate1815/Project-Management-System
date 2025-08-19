@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Online Exam</title>
+<link rel="stylesheet" href="Style.css">
+</head>
+<body>
+<!-- Timer and End Exam -->
+  <div class="timer-container">
+    <span id="timer">20:00</span>
+    <button type="button" onclick="endExam()">End Exam</button>
+  </div>
+
+  <!-- Quiz Form -->
+  <form action="ExamServlet" method="post" id="quizForm">
+  <input type="hidden" name="subject" value="java7th">
+    <div class="question" id="q1">
+      <h3>Q1. What will be the output of the following code?
+
+            public class Test {
+            public static void main(String[] args) {
+            int x = 5;
+            int y = ++x * 5 / x-- + --x;
+            System.out.println(y);
+            }
+            }</h3>
+      <input type="radio" name="q1" value="A">11<br>
+      <input type="radio" name="q1" value="B">10<br>
+      <input type="radio" name="q1" value="C">12<br>
+      <input type="radio" name="q1" value="D">Compilation Error<br>
+    </div>
+
+    <div class="question" id="q2">
+      <h3>Q2. Which of the following statements about Java memory management is true?</h3>
+      <input type="radio" name="q2" value="A">Java uses reference counting for garbage collection<br>
+      <input type="radio" name="q2" value="B">The finalize() method is always called before an object is garbage collected<br>
+      <input type="radio" name="q2" value="C">Java supports manual memory deallocation<br>
+      <input type="radio" name="q2" value="D">The JVM manages memory automatically through a garbage collector <br>
+      
+    </div>
+
+    <div class="question" id="q3">
+      <h3>Q3. What is the result of the following code involving threads?
+
+        public class Demo extends Thread {
+            public void run() {
+                System.out.println("Thread running");
+            }
+
+            public static void main(String[] args) {
+                Demo d = new Demo();
+                d.run(); // Not using start()
+            }
+        }</h3>
+      <input type="radio" name="q3" value="A">Compilation Error<br>
+      <input type="radio" name="q3" value="B">Thread running<br>
+      <input type="radio" name="q3" value="C">No Output<br>
+      <input type="radio" name="q3" value="D">Runtime error<br>
+      
+    </div>
+
+    <div class="question" id="q4">
+      <h3>Q4. Which of the following is NOT a characteristic of Java's Stream API introduced in Java 8?</h3>
+      <input type="radio" name="q4" value="A">Streams can be infinite<br>
+      <input type="radio" name="q4" value="B"> Streams consume elements from a source lazily<br>
+      <input type="radio" name="q4" value="C">Streams modify the original data source<br>
+      <input type="radio" name="q4" value="D">Stream operations can be chained<br>
+      
+    </div>
+
+    <div class="question" id="q5">
+      <h3>Q5. What is the output of the following code snippet involving exceptions?
+
+        public class Example {
+            public static void main(String[] args) {
+                try {
+                    System.out.println("A");
+                    throw new RuntimeException("B");
+                } catch (Exception e) {
+                    System.out.println("C");
+                } finally {
+                    System.out.println("D");
+                }
+            }
+        }</h3>
+      <input type="radio" name="q5" value="A">A,C,D<br>
+      <input type="radio" name="q5" value="B">A,B,D<br>
+      <input type="radio" name="q5" value="C">A,D<br>
+      <input type="radio" name="q5" value="D">A,C<br>
+      
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation-buttons">
+      <button type="button" onclick="prevQuestion()">Previous</button>
+      <button type="button" onclick="clearAnswer()">Clear</button>
+      <button type="button" id="nextBtn" onclick="nextQuestion()">Next</button>
+      <input type="submit" id="submitBtn" value="Submit Answers" style="display:none;">
+    </div>
+  </form>
+	<script>
+    const questions = document.querySelectorAll('.question');
+    let current = 0;
+
+    function showQuestion(index) {
+      questions.forEach((q, i) => {
+        q.style.display = i === index ? 'block' : 'none';
+      });
+
+      document.querySelector('button[onclick="prevQuestion()"]').style.display = index === 0 ? 'none' : 'inline-block';
+      document.getElementById('nextBtn').style.display = index === questions.length - 1 ? 'none' : 'inline-block';
+      document.getElementById('submitBtn').style.display = index === questions.length - 1 ? 'inline-block' : 'none';
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        current++;
+        showQuestion(current);
+      }
+    }
+
+    function prevQuestion() {
+      if (current > 0) {
+        current--;
+        showQuestion(current);
+      }
+    }
+
+    function clearAnswer() {
+      const radios = questions[current].querySelectorAll('input[type="radio"]');
+      radios.forEach(r => r.checked = false);
+    }
+
+    function endExam() {
+      alert("Exam ended.");
+      document.getElementById("quizForm").submit();
+    }
+
+    // Timer logic
+    let totalSeconds = 20 * 60;
+    const timerElement = document.getElementById('timer');
+
+    function updateTimer() {
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      timerElement.textContent = `${minutes}:${seconds}`;
+      if (totalSeconds > 0) {
+        totalSeconds--;
+      } else {
+        endExam();
+      }
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+    showQuestion(current);
+  </script>
+</body>
+</html>

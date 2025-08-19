@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Online Exam</title>
+<link rel="stylesheet" href="Style.css">
+</head>
+<body>
+<!-- Timer and End Exam -->
+  <div class="timer-container">
+    <span id="timer">20:00</span>
+    <button type="button" onclick="endExam()">End Exam</button>
+  </div>
+
+  <!-- Quiz Form -->
+  <form action="ExamServlet" method="post" id="quizForm">
+  <input type="hidden" name="subject" value="Python7th">
+    <div class="question" id="q1">
+      <h3>Q1. What is the output of the following code?
+
+        x = [1, 2, 3]
+        print(x[1:])</h3>
+      <input type="radio" name="q1" value="A">[1]<br>
+      <input type="radio" name="q1" value="B">[2,3]<br>
+      <input type="radio" name="q1" value="C">[1,2]<br>
+      <input type="radio" name="q1" value="D">[3]<br>
+    </div>
+
+    <div class="question" id="q2">
+      <h3>Q2. What is the output of this code?
+
+        print(bool("False"))</h3>
+      <input type="radio" name="q2" value="A">True<br>
+      <input type="radio" name="q2" value="B">False<br>
+      <input type="radio" name="q2" value="C">None<br>
+      <input type="radio" name="q2" value="D">Error<br>
+      
+    </div>
+
+    <div class="question" id="q3">
+      <h3>Q3. Which of the following is used to define a block of code in Python?</h3>
+      <input type="radio" name="q3" value="A">Curly Braces{}()<br>
+      <input type="radio" name="q3" value="B">Parentheses()()<br>
+      <input type="radio" name="q3" value="C">Indentation<br>
+      <input type="radio" name="q3" value="D">Colon:<br>
+      
+    </div>
+
+    <div class="question" id="q4">
+      <h3>Q4. What is the data type of None in Python?</h3>
+      <input type="radio" name="q4" value="A">str<br>
+      <input type="radio" name="q4" value="B">bool<br>
+      <input type="radio" name="q4" value="C">NoneType<br>
+      <input type="radio" name="q4" value="D">null<br>
+      
+    </div>
+
+    <div class="question" id="q5">
+      <h3>Q5. Which of the following methods is used to add an item to a set?</h3>
+      <input type="radio" name="q5" value="A">add()<br>
+      <input type="radio" name="q5" value="B">append()<br>
+      <input type="radio" name="q5" value="C">insert()<br>
+      <input type="radio" name="q5" value="D">push()<br>
+      
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation-buttons">
+      <button type="button" onclick="prevQuestion()">Previous</button>
+      <button type="button" onclick="clearAnswer()">Clear</button>
+      <button type="button" id="nextBtn" onclick="nextQuestion()">Next</button>
+      <input type="submit" id="submitBtn" value="Submit Answers" style="display:none;">
+    </div>
+  </form>
+	<script>
+    const questions = document.querySelectorAll('.question');
+    let current = 0;
+
+    function showQuestion(index) {
+      questions.forEach((q, i) => {
+        q.style.display = i === index ? 'block' : 'none';
+      });
+
+      document.querySelector('button[onclick="prevQuestion()"]').style.display = index === 0 ? 'none' : 'inline-block';
+      document.getElementById('nextBtn').style.display = index === questions.length - 1 ? 'none' : 'inline-block';
+      document.getElementById('submitBtn').style.display = index === questions.length - 1 ? 'inline-block' : 'none';
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        current++;
+        showQuestion(current);
+      }
+    }
+
+    function prevQuestion() {
+      if (current > 0) {
+        current--;
+        showQuestion(current);
+      }
+    }
+
+    function clearAnswer() {
+      const radios = questions[current].querySelectorAll('input[type="radio"]');
+      radios.forEach(r => r.checked = false);
+    }
+
+    function endExam() {
+      alert("Exam ended.");
+      document.getElementById("quizForm").submit();
+    }
+
+    // Timer logic
+    let totalSeconds = 20 * 60;
+    const timerElement = document.getElementById('timer');
+
+    function updateTimer() {
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      timerElement.textContent = `${minutes}:${seconds}`;
+      if (totalSeconds > 0) {
+        totalSeconds--;
+      } else {
+        endExam();
+      }
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+    showQuestion(current);
+  </script>
+</body>
+</html>
