@@ -1,32 +1,63 @@
-package harsh;
-import java.io.*;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import java.sql.*;
+package test;
+import java.io.IOException;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import dao.LoginDao;
+import pojos.StudentBean;
+
+@WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet 
 {
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+    LoginDao ld;
+    
+	public void init()
+	{
+	   ld=new LoginDao();
+	}
 
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/examportal", "root", "AdminRoot@1234");
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE username=? AND password=?");
-            ps.setString(1, username);
-            ps.setString(2, password);
-            ResultSet rs = ps.executeQuery();
-            if(rs.next()) {
-                HttpSession session = request.getSession();
-                session.setAttribute("username", username);		// To Store Values in session easy retrieval
-                session.setAttribute("password", password);
-                response.sendRedirect("selectSem.html");
-            } else {
-                response.sendRedirect("index.jsp?error=1");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException 
+    {
+    	try
+    	{
+    		response.setContentType("text/html");
+        	
+            String uN= request.getParameter("id");
+            String pW=request.getParameter("password");
+            
+            StudentBean sb=ld.login(uN,pW);
+            if(sb!=null)
+            {
+            	  if(sb.getRole().equals("admin"))
+            	  {
+            		  HttpSession session = request.getSession();
+                	  session.setAttribute("userDetails",sb);
+                	  session.setMaxInactiveInterval(20 * 60); // 900 seconds
+                	  response.sendRedirect("DashBoardAdmin.jsp"); // send request to the page
+            	  }
+            	  else
+            	  {
+            		  HttpSession session = request.getSession();
+                	  session.setAttribute("userDetails",sb);
+                	  session.setMaxInactiveInterval(20 * 60); // 900 seconds
+                	  response.sendRedirect("StudentDashBoard.jsp");   // send request to the page 
+            	  }
             }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+            else
+            {
+            	response.sendRedirect("Login.jsp"); 
+            }
+          
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
     }
 }
+
+
